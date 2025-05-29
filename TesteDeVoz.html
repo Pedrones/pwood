@@ -1,0 +1,155 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Galeria PWood</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .thumbnail {
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .thumbnail:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid py-4">
+    <div class="row" id="gallery"></div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content bg-dark">
+        <div class="modal-body text-center">
+          <img id="modalImage" class="img-fluid" alt="Imagem ampliada">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const repoOwner = 'pedrones';
+    const repoName = 'pedrones.github.io';
+    const path = 'pwood';
+    const gallery = document.getElementById('gallery');
+
+    async function loadImages() {
+      const apiUrl = `https://api.github.com/repos/${repoOwner}/${path}/contents/`;
+      try {
+        const response = await fetch(apiUrl);
+        const files = await response.json();
+
+        files.forEach(file => {
+          if (file.type === 'file' && /\.(jpe?g|png|gif|webp)$/i.test(file.name)) {
+            const col = document.createElement('div');
+            col.className = 'col-6 col-sm-4 col-md-3 col-lg-2 mb-4';
+            col.innerHTML = `
+              <img src="${file.download_url}" class="img-fluid thumbnail" alt="${file.name}" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="showImage('${file.download_url}')">
+            `;
+            gallery.appendChild(col);
+          }
+        });
+      } catch (error) {
+        console.error('Erro ao carregar imagens:', error);
+        gallery.innerHTML = '<p class="text-danger">Erro ao carregar imagens.</p>';
+      }
+    }
+
+    function showImage(src) {
+      document.getElementById('modalImage').src = src;
+    }
+
+    loadImages();
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<div class="text-center my-3">
+  <button class="btn btn-primary" onclick="iniciarReconhecimento()">🎤 Falar comando</button>
+</div>
+
+
+<script>
+  // Verifica se o navegador suporta a API
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (SpeechRecognition) {
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'pt-BR'; // Idioma: português do Brasil
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    // Inicia o reconhecimento ao clicar em um botão
+    function iniciarReconhecimento() {
+      recognition.start();
+    }
+
+    // Quando o reconhecimento obtém um resultado
+    recognition.onresult = function(event) {
+      const comando = event.results[0][0].transcript.toLowerCase();
+      console.log('Comando reconhecido:', comando);
+
+      // Exemplo de ação com base no comando
+      if (comando.includes('iniciar')) {
+        iniciar();
+      } else if (comando.includes('pausar')) {
+        pausar();
+      } else if (comando.includes('rápido')) {
+        rapido();
+      } else if (comando.includes('devagar')) {
+        devagar();
+      } else if (comando.includes('maior')) {
+        maior();
+      } else if (comando.includes('menor')) {
+        menor();
+      } else {
+        alert('Comando não reconhecido: ' + comando);
+      }
+    };
+
+    recognition.onerror = function(event) {
+      console.error('Erro no reconhecimento:', event.error);
+    };
+  } else {
+    alert('Reconhecimento de voz não suportado neste navegador.');
+  }
+
+  // Funções para os comandos
+  function iniciar() {
+    alert("Iniciando...");
+    // Aqui você pode iniciar uma animação, slideshow, etc.
+  }
+
+  function pausar() {
+    alert("Pausando...");
+    // Aqui você pode pausar uma animação, slideshow, etc.
+  }
+
+  function rapido() {
+    alert("Velocidade aumentada.");
+    // Aumentar velocidade de algo (ex: slideshow, animação)
+  }
+
+  function devagar() {
+    alert("Velocidade reduzida.");
+    // Reduzir velocidade de algo
+  }
+
+  function maior() {
+    alert("Aumentando tamanho.");
+    // Aumentar tamanho de um elemento (ex: imagem, texto)
+  }
+
+  function menor() {
+    alert("Diminuindo tamanho.");
+    // Diminuir tamanho de um elemento
+  }
+</script>
+
+</body>
+</html>
